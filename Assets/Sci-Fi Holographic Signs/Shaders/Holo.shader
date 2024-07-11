@@ -20,6 +20,7 @@ Shader "MM/Holo"
 		_Iconscrollingspeed("Icon scrolling speed", Range( 0 , 0.3)) = 0.1
 		_Displacement("Displacement", 2D) = "black" {}
 		_Glitchspeed("Glitch speed", Range( 0 , 0.03)) = 0.01
+		_Seed("RandomSeed", Int) = 0
 		[Toggle]_TextAnimation("Text Animation", Float) = 0
 		_TextAnimationSpeed("Text Animation Speed", Range( 1 , 10)) = 1
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
@@ -79,11 +80,17 @@ Shader "MM/Holo"
 		SamplerState sampler_Icon;
 		uniform float2 _IconOffsetRight;
 		uniform float _ColorIntensity;
+		uniform float _Seed;
 
 
 		float3 mod3D289( float3 x ) { return x - floor( x / 289.0 ) * 289.0; }
 
 		float4 mod3D289( float4 x ) { return x - floor( x / 289.0 ) * 289.0; }
+
+		float random (float t)
+        {
+			return frac(sin(dot(float2(t, t),float2(12.9898,78.233)))*43758.5453123);
+		}
 
 		float4 permute( float4 x ) { return mod3D289( ( x * 34.0 + 1.0 ) * x ); }
 
@@ -193,7 +200,15 @@ Shader "MM/Holo"
 			float2 uv_TexCoord140 = i.uv_texcoord * _IconTiling + _IconOffsetRight;
 			float2 panner143 = ( _Time.y * appendResult139.xy + uv_TexCoord140);
 			float4 Icon151 = ( ( SAMPLE_TEXTURE2D( _Icon, sampler_Icon, panner144 ) + SAMPLE_TEXTURE2D( _Icon, sampler_Icon, panner143 ) ) * i.vertexColor * i.vertexColor.a );
-			o.Emission = ( Dots79 + Details135 + ( ( Base168 + Text154 + Icon151 ) * _ColorIntensity ) ).rgb;
+			float t = fmod(_Time.y, 3600);
+			if (random(t) * random(t+_Seed) < 0.8)
+			{
+				o.Emission = ( Dots79 + Details135 + ( ( Base168 + Text154 + Icon151 ) * _ColorIntensity ) ).rgb;
+			}
+			else
+			{
+				o.Emission = 0;
+			}
 			o.Alpha = 1;
 		}
 
