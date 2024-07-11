@@ -7,6 +7,7 @@ The models are not mine and are credited, the shader for the signs are opartiall
 ## Implemented effects
 - [x] The effect of raindrop sliding on a foggy window.
 - [x] Rain falling outside.
+- [x] Slight flickering of signs.
 
 ## Stretch goals
 - [ ] Implement a billboard that flickers
